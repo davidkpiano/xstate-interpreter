@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../dist/xstate-interpreter.umd.js"></script>
+</head>
+<body>
+
+  <script>
+    const machine = Machine({
+      initial: 'a',
+      states: {
+        a: {
+          onEntry: {type: 'xstate.send', event: 'EVENT', delay: 1000, id: 'foo' },
+          on: { EVENT: 'b' }
+        },
+        b: {
+          onEntry: {type: 'xstate.cancel', sendId: 'foo' },
+          on: { EVENT: 'a' }
+        }
+      }
+    });
+
+    const interpreter = new Interpreter(machine);
+    interpreter.state$.subscribe(e => console.log('state', e));
+    // interpreter.event$.subscribe(e => console.log('event', e));
+  </script>
+</body>
+</html>

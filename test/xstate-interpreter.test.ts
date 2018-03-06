@@ -1,14 +1,36 @@
-import DummyClass from '../src/xstate-interpreter'
+import { Interpreter } from '../src/xstate-interpreter'
+import { Machine } from 'xstate'
 
-/**
- * Dummy test
- */
-describe('Dummy test', () => {
-  it('works if true is truthy', () => {
-    expect(true).toBeTruthy()
-  })
+describe('Interpreter', () => {
+  it('should create a new Interpreter', async () => {
+    const machine = Machine({
+      initial: 'a',
+      states: {
+        a: {
+          on: { EVENT: 'b' }
+        },
+        b: {
+          on: { EVENT: 'a' }
+        }
+      }
+    })
 
-  it('DummyClass is instantiable', () => {
-    expect(new DummyClass()).toBeInstanceOf(DummyClass)
+    const interpreter = new Interpreter(machine)
+
+    interpreter.state$.subscribe(state => console.log(state))
+
+    interpreter.send('EVENT')
+
+    interpreter.event$.next('EVENT')
+
+    console.log('hi')
+
+    await new Promise(res =>
+      setTimeout(() => {
+        res()
+      }, 10000)
+    )
+
+    expect(interpreter).not.toBeUndefined()
   })
 })
